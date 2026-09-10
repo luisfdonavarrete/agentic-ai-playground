@@ -1,5 +1,5 @@
 import 'dotenv/config';
-import {Agent, run} from "@openai/agents";
+import {Agent, run, type RunResult} from "@openai/agents";
 import * as fs from "node:fs";
 import path from 'node:path';
 import {fileURLToPath} from "node:url";
@@ -17,12 +17,28 @@ const outputType = z.object({
     reasoning: z.string(),
     recommendedAction: z.string()
 });
+
+type Output = z.infer<typeof outputType>;
 const agent = new Agent({
     name: "customer support assistant",
     instructions: instructions,
     model: "gpt-6-astra",
     outputType: outputType
 });
+const questions: string[] = [
+    "How can I reset my password?",
+    "The app crashes every time I open it on Android.",
+    "Our entire team cannot log in, and work is blocked.",
+    "Ambiguous: “It isn’t working. Please help.",
+];
 
-const result = await run(agent, "How can I reset my password?");
-console.log(result.finalOutput);
+const results: Output[] = [];
+
+for (const q of questions) {
+    const r = await run(agent, q);
+    if (r.finalOutput) {
+        results.push(r.finalOutput);
+    }
+}
+
+console.log(results);
