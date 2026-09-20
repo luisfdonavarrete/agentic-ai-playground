@@ -28,3 +28,22 @@ export const customerLookupSchema = z.object({
 });
 
 export type CustomerLookup = z.infer<typeof customerLookupSchema>;
+
+const ticketSchema = z.object({
+    id: z.string(),
+    customerId: z.string(),
+    status: z.enum(["open", "closed"]),
+});
+
+export type Ticket = z.infer<typeof ticketSchema>;
+
+export type TicketHistoryResult = z.infer<typeof ticketSchema[]>;
+
+export const statusSchema = z.enum([
+    "active",
+    "inactive",
+    "maintenance",
+    "suspended",
+    "terminated",
+]);
+export type ServiceStatus = z.infer<typeof statusSchema>;

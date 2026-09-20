@@ -7,6 +7,8 @@ import {
     supportResponseSchema
 } from "./types.js";
 import {getCustomer} from "./get-customer.js";
+import {getTicketHistory} from "./get-ticket-history.js";
+import {getServiceStatus} from "./get-service-status.js";
 
 const instructions = fs.readFileSync(
     new URL("./instructions.md", import.meta.url),
@@ -18,7 +20,7 @@ const agent = new Agent({
     instructions: instructions,
     model: "gpt-6-astra",
     outputType: supportResponseSchema,
-    tools: [getCustomer]
+    tools: [getCustomer, getTicketHistory, getServiceStatus]
 });
 const scenarios = [
     {name: "Locked account", customerId: "cust_123", question: "My account isn't working.", expectLookup: true},
