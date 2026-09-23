@@ -1,27 +1,11 @@
 import 'dotenv/config';
-import {Agent, run} from "@openai/agents";
-import * as fs from "node:fs";
+import {run} from "@openai/agents";
 import {
     type SupportContext,
     type SupportResponse,
-    supportResponseSchema
 } from "./types.js";
-import {getCustomer} from "./get-customer.js";
-import {getTicketHistory} from "./get-ticket-history.js";
-import {getServiceStatus} from "./get-service-status.js";
+import supportAgent from "./agents/support-agent.js";
 
-const instructions = fs.readFileSync(
-    new URL("./instructions.md", import.meta.url),
-    "utf8",
-);
-
-const agent = new Agent({
-    name: "customer support assistant",
-    instructions: instructions,
-    model: "gpt-6-astra",
-    outputType: supportResponseSchema,
-    tools: [getCustomer, getTicketHistory, getServiceStatus]
-});
 const scenarios: {
     name: string;
     customerId: string;
@@ -58,11 +42,17 @@ const scenarios: {
     },
 ];
 
-const results: { scenario: string, question: string, response: SupportResponse, lookupIds: string[], toolCalls: string[] }[] = [];
+const results: {
+    scenario: string,
+    question: string,
+    response: SupportResponse,
+    lookupIds: string[],
+    toolCalls: string[]
+}[] = [];
 
 for (const scenario of scenarios) {
     const context: SupportContext = {customerId: scenario.customerId, lookupIds: []};
-    const result = await run(agent, scenario.question, {context});
+    const result = await run(supportAgent, scenario.question, {context});
     const response = result.finalOutput;
     const toolCalls = result.newItems.flatMap(item =>
         item.type === "tool_call_item" && item.rawItem?.type === "function_call"
@@ -90,7 +80,13 @@ for (const scenario of scenarios) {
         throw new Error(`Lookup used an identity outside application context: ${scenario.name}`);
     }
 
-    results.push({scenario: scenario.name, question: scenario.question, response, lookupIds: context.lookupIds, toolCalls});
+    results.push({
+        scenario: scenario.name,
+        question: scenario.question,
+        response,
+        lookupIds: context.lookupIds,
+        toolCalls
+    });
 }
 
 console.dir(results, {depth: null});
