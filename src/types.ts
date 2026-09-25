@@ -1,4 +1,5 @@
 import * as z from "zod";
+import type {Agent} from "@openai/agents";
 
 export const supportResponseSchema = z.object({
     category: z.enum(["login", "app_crash", "unknown", "other"]),
@@ -11,7 +12,6 @@ export type SupportResponse = z.infer<typeof supportResponseSchema>;
 
 export type SupportContext = {
     customerId: string;
-    lookupIds: string[];
 };
 
 const customerSchema = z.object({
@@ -47,3 +47,8 @@ export const statusSchema = z.enum([
     "terminated",
 ]);
 export type ServiceStatus = z.infer<typeof statusSchema>;
+
+export type SupportAgent = Agent<
+    SupportContext,
+    typeof supportResponseSchema
+>

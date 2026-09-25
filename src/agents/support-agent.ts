@@ -1,4 +1,4 @@
-import {supportResponseSchema} from "../types.js";
+import {type SupportAgent, supportResponseSchema} from "../types.js";
 import {ticketHistoryTool} from "../tools/ticket-history.tool.js";
 import {serviceStatusTool} from "../tools/service-status.tool.js";
 import {customerTool} from "../tools/customer.tool.js";
@@ -18,4 +18,4 @@ const agent = new Agent({
     tools: [customerTool, ticketHistoryTool, serviceStatusTool]
 });
 
-export default agent;
+export default agent as SupportAgent;

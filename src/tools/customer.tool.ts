@@ -12,8 +12,7 @@ export const customerTool = tool({
         if (!context) {
             throw new Error("Customer lookup requires application context.");
         }
-        const {customerId, lookupIds} = context.context;
-        lookupIds.push(customerId);
+        const {customerId} = context.context;
         console.log(`[get_customer] Looking up demo customer ${customerId}`);
         const customer = customerService.getCustomer(customerId);
         return customer

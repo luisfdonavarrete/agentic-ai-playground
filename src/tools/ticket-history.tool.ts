@@ -11,8 +11,7 @@ export const ticketHistoryTool = tool({
         if (!context) {
             throw new Error("Customer lookup requires application context.");
         }
-        const {customerId, lookupIds} = context.context;
-        lookupIds.push(customerId);
+        const {customerId} = context.context;
         console.log(`[get_ticket_history] Looking up ticket history for customer ${customerId}`);
         return ticketService.getHistory(customerId);
     },
